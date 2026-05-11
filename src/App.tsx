@@ -1,18 +1,25 @@
 import { Routes, Route } from 'react-router'
-
-function Home() {
-  return <h1>rTAP</h1>
-}
-
-function NotFound() {
-  return <h1>404 - Not Found</h1>
-}
+import { SessionProvider } from './context/SessionContext'
+import { AppLayout } from './components/AppLayout/AppLayout'
+import { HomeScreen } from './screens/Home/HomeScreen'
+import { TestSelectionScreen } from './screens/TestSelection/TestSelectionScreen'
+import { TestConfigurationScreen } from './screens/TestConfiguration/TestConfigurationScreen'
+import { TestScreen } from './screens/Test/TestScreen'
+import { ResultsScreen } from './screens/Results/ResultsScreen'
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <SessionProvider>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<HomeScreen />} />
+          <Route path="tests" element={<TestSelectionScreen />} />
+          <Route path="tests/:testId/configure" element={<TestConfigurationScreen />} />
+          <Route path="tests/:testId/results" element={<ResultsScreen />} />
+          <Route path="*" element={<p>404 - Not Found</p>} />
+        </Route>
+        <Route path="tests/:testId/run" element={<TestScreen />} />
+      </Routes>
+    </SessionProvider>
   )
 }

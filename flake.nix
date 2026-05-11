@@ -1,5 +1,5 @@
 {
-  description = "rTAP React SPA development environment";
+  description = "Attenly React SPA development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -21,7 +21,7 @@
           ];
 
           shellHook = ''
-            echo "rTAP dev environment"
+            echo "Attenly dev environment"
             echo "Node $(node --version) | npm $(npm --version)"
           '';
         };
