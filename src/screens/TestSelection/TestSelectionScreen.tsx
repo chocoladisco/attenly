@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import { testCatalogue } from '../../data/testCatalogue'
 import { useSession } from '../../context/SessionContext'
 import { Button } from '../../components/Button/Button'
@@ -6,6 +7,7 @@ import { Button } from '../../components/Button/Button'
 export function TestSelectionScreen() {
   const navigate = useNavigate()
   const { dispatch } = useSession()
+  const { t } = useTranslation()
 
   function handleSelect(testId: string) {
     dispatch({ type: 'SELECT_TEST', testId })
@@ -23,7 +25,7 @@ export function TestSelectionScreen() {
           letterSpacing: '0.05em',
         }}
       >
-        Select a Test
+        {t('testSelection.heading')}
       </h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -46,12 +48,14 @@ export function TestSelectionScreen() {
                 margin: 0,
               }}
             >
-              {test.name}
+              {t(`tests.${test.id}.name`)}
             </h3>
-            <p style={{ color: '#aaa', margin: 0, lineHeight: 1.6 }}>{test.description}</p>
+            <p style={{ color: '#aaa', margin: 0, lineHeight: 1.6 }}>
+              {t(`tests.${test.id}.description`)}
+            </p>
             <div>
               <Button variant="secondary" onClick={() => handleSelect(test.id)}>
-                Configure
+                {t('testSelection.configure')}
               </Button>
             </div>
           </div>

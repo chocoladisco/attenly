@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../../components/Button/Button'
 
 export function HomeScreen() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', paddingTop: '4rem' }}>
@@ -18,9 +20,9 @@ export function HomeScreen() {
         Attenly
       </h1>
       <p style={{ color: '#aaa', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-        Measure and train your visual sustained attention with scientifically structured tests.
+        {t('home.tagline')}
       </p>
-      <Button onClick={() => navigate('/tests')}>Select a Test</Button>
+      <Button onClick={() => navigate('/tests')}>{t('home.selectTest')}</Button>
     </div>
   )
 }

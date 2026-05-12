@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import { useSession } from '../../context/SessionContext'
 import { getTestById } from '../../data/testCatalogue'
 import { buildDefaultConfig, computeResult } from './TestEngine'
@@ -11,6 +12,7 @@ export function TestScreen() {
   const { testId } = useParams<{ testId: string }>()
   const navigate = useNavigate()
   const { state, dispatch } = useSession()
+  const { t } = useTranslation()
 
   const test = getTestById(testId ?? '')
   const config = state.config ?? (test ? buildDefaultConfig(test) : {})
@@ -62,7 +64,7 @@ export function TestScreen() {
           marginBottom: '1rem',
         }}
       >
-        Test in progress
+        {t('testScreen.title')}
       </h2>
 
       <div
@@ -84,11 +86,11 @@ export function TestScreen() {
           marginBottom: '2rem',
         }}
       >
-        Press Space or click when the shape matches the previous one
+        {t('testScreen.instructions')}
       </p>
 
       <Button variant="danger" onClick={handleAbort}>
-        Abort
+        {t('testScreen.abort')}
       </Button>
     </div>
   )
