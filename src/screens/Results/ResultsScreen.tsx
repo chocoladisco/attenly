@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import { useSession } from '../../context/SessionContext'
 import { Button } from '../../components/Button/Button'
 import type { TestEvent, TestResult } from '../../types/session'
@@ -38,12 +39,13 @@ const ERR_COLOR = '#fb923c'
 
 // ─── Reaction-time bar chart ──────────────────────────────────────────────────
 function ReactionTimeChart({ events }: { events: ReadonlyArray<TestEvent> }) {
+  const { t } = useTranslation()
   const hits = events.filter((e) => e.type === 'response_correct' && e.reactionMs != null)
 
   if (hits.length === 0) {
     return (
       <p style={{ color: '#555', fontFamily: 'monospace', fontSize: '0.8rem' }}>
-        No hits recorded.
+        {t('results.noHits')}
       </p>
     )
   }
@@ -53,7 +55,6 @@ function ReactionTimeChart({ events }: { events: ReadonlyArray<TestEvent> }) {
   const totalH = PAD_T + CHART_H + PAD_B
   const baseline = PAD_T + CHART_H
 
-  // average line
   const avgMs = hits.reduce((s, h) => s + h.reactionMs!, 0) / hits.length
   const avgY = PAD_T + CHART_H - (avgMs / maxMs) * CHART_H
 
@@ -107,7 +108,7 @@ function ReactionTimeChart({ events }: { events: ReadonlyArray<TestEvent> }) {
         opacity={0.5}
       />
       <text x={SVG_W - PAD_R - 2} y={avgY - 3} fill={HIT_COLOR} fontSize={8} textAnchor="end" opacity={0.7}>
-        avg {Math.round(avgMs)} ms
+        {t('results.avgMs', { ms: Math.round(avgMs) })}
       </text>
 
       {/* Y-axis unit label */}
@@ -176,10 +177,11 @@ function EventTimeline({
 
 // ─── Legend ───────────────────────────────────────────────────────────────────
 function TimelineLegend() {
+  const { t } = useTranslation()
   const items = [
-    { color: HIT_COLOR, label: 'Hit' },
-    { color: MISS_COLOR, label: 'Miss' },
-    { color: ERR_COLOR, label: 'Commission error' },
+    { color: HIT_COLOR, label: t('results.legend.hit') },
+    { color: MISS_COLOR, label: t('results.legend.miss') },
+    { color: ERR_COLOR, label: t('results.legend.commissionError') },
   ]
   return (
     <div style={{ display: 'flex', gap: '1.5rem', fontFamily: 'monospace', fontSize: '0.75rem', color: '#aaa' }}>
@@ -219,6 +221,7 @@ export function ResultsScreen() {
   const navigate = useNavigate()
   const { state } = useSession()
   const { result } = state
+  const { t } = useTranslation()
 
   return (
     <div style={{ maxWidth: '520px', margin: '0 auto' }}>
@@ -231,11 +234,11 @@ export function ResultsScreen() {
           marginBottom: '2rem',
         }}
       >
-        Results
+        {t('results.title')}
       </h2>
 
       {result === null ? (
-        <p style={{ color: '#aaa' }}>No results available.</p>
+        <p style={{ color: '#aaa' }}>{t('results.noResults')}</p>
       ) : (
         <>
           {/* Stats table */}
@@ -249,12 +252,12 @@ export function ResultsScreen() {
             }}
           >
             {[
-              ['Score', result.score],
-              ['Accuracy', `${Math.round(result.accuracy * 100)}%`],
-              ['Avg Reaction Time', `${Math.round(result.reactionTimeMs)} ms`],
-              ['Hits', result.hits],
-              ['Misses', result.misses],
-              ['Commission Errors', result.commissions],
+              [t('results.score'), result.score],
+              [t('results.accuracy'), `${Math.round(result.accuracy * 100)}%`],
+              [t('results.avgReactionTime'), `${Math.round(result.reactionTimeMs)} ms`],
+              [t('results.hits'), result.hits],
+              [t('results.misses'), result.misses],
+              [t('results.commissionErrors'), result.commissions],
             ].map(([label, value]) => (
               <div key={label as string}>
                 <span style={{ color: '#aaa' }}>{label}</span>
@@ -265,13 +268,13 @@ export function ResultsScreen() {
 
           {/* Reaction time chart */}
           <div style={{ marginBottom: '2rem' }}>
-            <SectionLabel>Reaction time per hit</SectionLabel>
+            <SectionLabel>{t('results.reactionTimeSection')}</SectionLabel>
             <ReactionTimeChart events={result.rawEvents} />
           </div>
 
           {/* Event timeline */}
           <div style={{ marginBottom: '2rem' }}>
-            <SectionLabel>Event timeline</SectionLabel>
+            <SectionLabel>{t('results.eventTimelineSection')}</SectionLabel>
             <EventTimeline events={result.rawEvents} completedAt={result.completedAt} />
             <div style={{ marginTop: '0.5rem' }}>
               <TimelineLegend />
@@ -281,13 +284,13 @@ export function ResultsScreen() {
       )}
 
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <Button onClick={() => navigate('/')}>Home</Button>
+        <Button onClick={() => navigate('/')}>{t('results.home')}</Button>
         <Button variant="secondary" onClick={() => navigate(`/tests/${testId}/configure`)}>
-          Try Again
+          {t('results.tryAgain')}
         </Button>
         {result !== null && (
           <Button variant="secondary" onClick={() => downloadResultCsv(result)}>
-            Download CSV
+            {t('results.downloadCsv')}
           </Button>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import { getTestById } from '../../data/testCatalogue'
 import { buildDefaultConfig } from '../Test/TestEngine'
 import { useSession } from '../../context/SessionContext'
@@ -10,6 +11,7 @@ export function TestConfigurationScreen() {
   const { testId } = useParams<{ testId: string }>()
   const navigate = useNavigate()
   const { dispatch } = useSession()
+  const { t } = useTranslation()
 
   const test = getTestById(testId ?? '')
   const [config, setConfig] = useState<TestConfig>(() =>
@@ -17,7 +19,7 @@ export function TestConfigurationScreen() {
   )
 
   if (!test) {
-    return <p>Test not found.</p>
+    return <p>{t('testConfiguration.notFound')}</p>
   }
 
   function handleChange(key: string, value: string) {
@@ -44,12 +46,14 @@ export function TestConfigurationScreen() {
           letterSpacing: '0.05em',
         }}
       >
-        {test.name}
+        {t(`tests.${test.id}.name`)}
       </h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
         {test.configSchema.map((field) => {
           if (field.dependsOn && !config[field.dependsOn]) return null
+
+          const label = t(`config.${field.key}.label`)
 
           if (field.type === 'toggle') {
             const checked = Boolean(config[field.key] ?? field.defaultValue)
@@ -74,10 +78,12 @@ export function TestConfigurationScreen() {
                   onChange={(e) => handleToggle(field.key, e.target.checked)}
                   style={{ width: '1rem', height: '1rem', cursor: 'pointer' }}
                 />
-                {field.label}
+                {label}
               </label>
             )
           }
+
+          const unit = field.unit ? ` (${t(`config.${field.key}.unit`)})` : ''
 
           return (
             <div key={field.key} style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
@@ -85,8 +91,7 @@ export function TestConfigurationScreen() {
                 htmlFor={field.key}
                 style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#aaa' }}
               >
-                {field.label}
-                {field.unit ? ` (${field.unit})` : ''}
+                {label}{unit}
               </label>
               <input
                 id={field.key}
@@ -112,9 +117,9 @@ export function TestConfigurationScreen() {
       </div>
 
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <Button onClick={handleStart}>Start Test</Button>
+        <Button onClick={handleStart}>{t('testConfiguration.startTest')}</Button>
         <Button variant="secondary" onClick={() => navigate('/tests')}>
-          Back
+          {t('testConfiguration.back')}
         </Button>
       </div>
     </div>
